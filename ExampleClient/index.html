@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>API Examples</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		pre {
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			padding: 1em;
+			border: 1px solid black;
+		}
+		body {
+			margin: 0;
+			padding: 0;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.5em;
+		}
+	</style>
+</head>
+<body>
+	<pre id="req"></pre>
+	<pre id="resp"></pre>
+	<script type="module">
+		import {Remote} from './remote.js';
+		let server = new Remote('../ExampleServer/');
+
+		let {req, resp} = await server.exec('test', {
+			id: 1,
+			name: 'test',
+			other1: [1, 4.5],
+			other2: [3, 4, 5],
+			other3: [1, 'kk', [4, 7.8]]
+		}, {
+			// method: 'GET'
+		});
+		console.log(req);
+		document.querySelector('#req').innerHTML = JSON.stringify(req, null, 2);
+		console.log(resp);
+		document.querySelector('#resp').innerHTML = JSON.stringify(resp.content, null, 2);
+	</script>
+</body>
+</html>
