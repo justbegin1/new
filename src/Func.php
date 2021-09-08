@@ -106,11 +106,20 @@ final class Func extends Abstract\StaticOnly {
 						$type = $type[0]['type'];
 						$vals = [];
 						foreach ($values[$name] as $item) {
-							$val = $type::verify($item);
-							if($val->valid) {
-								$vals[] = $val->value;
+							if(is_array($type)) {
+								$item = static::_match_value_with_signature($type, $item, "{$name}.");
+								$itemv = [];
+								foreach($item as $k => $v) {
+									$itemv[$k] = $v['value'];
+								}
+								$vals[] = $itemv;
 							} else {
-								API::error("Value of parameter '{$previous}{$name}' is invalid. Expected type: {" . $val->value . "}", RESP_INVALID_ERR);
+								$val = $type::verify($item);
+								if($val->valid) {
+									$vals[] = $val->value;
+								} else {
+									API::error("Value of parameter '{$previous}{$name}' is invalid. Expected type: {" . $val->value . "}", RESP_INVALID_ERR);
+								}
 							}
 						}
 						$info['found'] = true;
