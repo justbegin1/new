@@ -9,7 +9,7 @@ class FloatType implements \KrishnaAPI\Interface\Parameter {
 	public static function verify($value) : Returner {
 		$f = filter_var($value, FILTER_VALIDATE_FLOAT);
 		if($f === false) {
-			return Returner::invalid('float');
+			return Returner::invalid(static::Name);
 		}
 		return Returner::valid($f);
 	}

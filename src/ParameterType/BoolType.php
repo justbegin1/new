@@ -9,7 +9,7 @@ class BoolType implements \KrishnaAPI\Interface\Parameter {
 	public static function verify($value) : Returner {
 		$f = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 		if($f === null) {
-			return Returner::invalid('boolean');
+			return Returner::invalid(static::Name);
 		}
 		return Returner::valid($f);
 	}

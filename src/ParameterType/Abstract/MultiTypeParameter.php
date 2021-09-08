@@ -28,6 +28,6 @@ abstract class MultiTypeParameter implements \KrishnaAPI\Interface\Parameter {
 				$msg[] = $type::Name;
 			}
 		}
-		return Returner::invalid(static::Name . ':{' . implode(', ', $msg) . '}');
+		return Returner::invalid(static::Name . ':{' . implode('|', $msg) . '}');
 	}
 }

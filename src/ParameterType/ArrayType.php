@@ -23,6 +23,6 @@ class ArrayType implements \KrishnaAPI\Interface\Parameter {
 				return Returner::valid($f);
 			}
 		}
-		return Returner::invalid('array');
+		return Returner::invalid(static::Name);
 	}
 }

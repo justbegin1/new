@@ -9,7 +9,7 @@ class IntType implements \KrishnaAPI\Interface\Parameter {
 	public static function verify($value) : Returner {
 		$f = filter_var($value, FILTER_VALIDATE_INT);
 		if($f === false) {
-			return Returner::invalid('integer');
+			return Returner::invalid(static::Name);
 		}
 		return Returner::valid($f);
 	}

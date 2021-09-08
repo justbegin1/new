@@ -10,6 +10,6 @@ class StringType implements \KrishnaAPI\Interface\Parameter {
 		if(is_string($value)) {
 			return Returner::valid($value);
 		}
-		return Returner::invalid('string');
+		return Returner::invalid(static::Name);
 	}
 }
