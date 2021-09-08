@@ -24,7 +24,7 @@ final class Func extends Abstract\StaticOnly {
 		if(file_exists($filename)) {
 			require_once $filename;
 		} else {
-			API::error("Function '{$function_name}' not found", RESP_INVALID_ERR);
+			API::error("API '{$function_name}' not found", RESP_INVALID_ERR);
 		}
 	}
 	protected static function _break_parameter_name(string $name) : array {
