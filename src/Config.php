@@ -1,48 +1,26 @@
 <?php
-namespace KrishnaAPI;
+namespace Krishna\API;
 
-use stdClass;
-
-final class Config extends Abstract\StaticOnly {
-	public static
+final class Config {
+	use StaticOnlyTrait;
+	// Flags
+	public static bool
 		$dev_mode = false,
-		$allow_jsonp = true,
-		$disable_auto_error_reporting = true,
-		//Headers
-		$no_cache_headers = true,
-		$zlib = true,
-		$content_type_header = true,
-		$access_control_allow_origin_all_header = true,
-		//Container for app developer defined configurations
-		$app = [];
+		$allow_jsonp = true;
 	
-	public static function overwrite(array $config) {
-		foreach($config as $key=>$val) {
-			switch ($key) {
-				case 'dev_mode':
-					self::$dev_mode = $val;
-					break;
-				case 'allow_jsonp':
-					self::$allow_jsonp = $val;
-					break;
-				case 'disable_auto_error_reporting':
-					self::$disable_auto_error_reporting = $val;
-					break;
-				case 'no_cache_headers':
-					self::$no_cache_headers = $val;
-					break;
-				case 'zlib':
-					self::$zlib = $val;
-					break;
-				case 'content_type_header':
-					self::$content_type_header = $val;
-					break;
-				case 'access_control_allow_origin_all_header':
-					self::$access_control_allow_origin_all_header = $val;
-					break;
-				case 'app':
-					self::$app = $val;
-			}
-		}
-	}
+	// Environment Settings
+	public static string
+		$magic_query_prop = '@__url__@',
+		$jsonp_keyword = '_jsonp_',
+		$func_default_name = '@Index';
+
+	// Headers
+	public static bool
+		$zlib = true,
+		$disable_caching = true,
+		$send_content_type = true;
+	public static ?array $access_control_headers = [
+		'Access-Control-Allow-Origin: *'
+	];
+	public static ?array $other_headers = null;
 }

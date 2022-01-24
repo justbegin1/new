@@ -1,9 +1,10 @@
 <?php
-namespace KrishnaAPI;
+namespace Krishna\API;
 
-final class JSON extends Abstract\StaticOnly {
+final class JSON {
+	use StaticOnlyTrait;
 	public static function encode(mixed $object, bool $pretty = false) : string {
-		$options = JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_INVALID_UTF8_SUBSTITUTE;
+		$options = JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE;
 		if($pretty) {
 			$options |= JSON_PRETTY_PRINT;
 		}
@@ -11,7 +12,7 @@ final class JSON extends Abstract\StaticOnly {
 		return ($out === false) ? 'null' : $out;
 	}
 
-	public static function decode(string $json) { // Returns NULL on error
+	public static function decode(string $json) : mixed { // Returns null on error
 		return json_decode($json, true, flags: JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }

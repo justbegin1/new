@@ -1,13 +1,15 @@
 <?php
-namespace KrishnaAPI;
+namespace Krishna\API;
 
-final class Debugger extends Abstract\StaticOnly {
-	protected static function _get_function_name($trace) {
+final class Debugger {
+	use StaticOnlyTrait;
+
+	private static function get_function_name($trace) : string {
 		$name = $trace['class'] ?? null;
 		if($name === null) {
 			return $trace['function'];
 		} else {
-			return $name . '\\' . $trace['function'];
+			return $name . '::' . $trace['function'];
 		}
 	}
 
@@ -19,7 +21,7 @@ final class Debugger extends Abstract\StaticOnly {
 			$found = false;
 			$trace_count = count($trace) - 1;
 			for($i = $trace_count; $i >= 0; $i--) {
-				$name = self::_get_function_name($trace[$i]);
+				$name = self::get_function_name($trace[$i]);
 				if($name === $func_name) {
 					$found = true;
 					break;
@@ -34,16 +36,16 @@ final class Debugger extends Abstract\StaticOnly {
 		$location = [
 			'line' => $trace['line'] ?? 'Unknown',
 			'file' => $trace['file'] ?? 'Unknown',
-			'call_to' => self::_get_function_name($trace)
+			'call_to' => self::get_function_name($trace)
 		];
 		return $location;
 	}
 
 	public static function dump(string $key, mixed $value, ?string $callpoint = null) {
-		$trace = self::trace_call_point($callpoint ?? (__CLASS__ . '\\' . __FUNCTION__));
+		$trace = self::trace_call_point($callpoint ?? (__METHOD__));
 		unset($trace['call_to']);
 		$trace['msg'] = "Debug dump: [{$key}]";
 		$trace['value'] = $value;
-		API::error($trace, RESP_DEBUG, false);
+		Server::add_debug_msg($trace);
 	}
 }

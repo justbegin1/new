@@ -1,7 +1,8 @@
 <?php
-namespace KrishnaAPI;
+namespace Krishna\API;
 
-final class Base64 extends Abstract\StaticOnly {
+final class Base64 {
+	use StaticOnlyTrait;
 	public static function encode(string $str) : string {
 		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
 	}

@@ -9,14 +9,15 @@
             "email": "anshu.krishna5@gmail.com"
         }
     ],
-    "version": "10.0.2",
+    "version": "11.0",
     "minimum-stability": "stable",
     "require": {
-        "php": ">=8.0.0"
+        "php": ">=8.1",
+        "anshu-krishna/data-validator": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "KrishnaAPI\\": "src"
+            "Krishna\\API\\": "src"
         }
     }
 }
