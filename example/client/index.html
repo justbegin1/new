@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>API Client Example</title>
+</head>
+<body>
+	<script type="module">
+		import {API} from './API.js';
+
+		const api = new API('../server/public', window.location.href);
+		let res = await api.fetch('test', {
+			a: 10.2
+		}).catch(error => {
+			console.log(error);
+			return null;
+		});
+		console.log(res);
+	</script>
+</body>
+</html>
