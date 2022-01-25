@@ -8,8 +8,6 @@ Func::set_signature([
 ]);
 
 Func::set_definition(function(array $params, string $function_name) {
-	return [
-		'func' => $function_name,
-		'param' => $params
-	];
+	\Krishna\API\Debugger::dump('Test', 'Testing debug message');
+	return $params;
 });

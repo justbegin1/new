@@ -8,9 +8,12 @@
 	<script type="module">
 		import {API, APIProxy} from './API.js';
 		const api = new APIProxy('../server/public', window.location.href);
-		console.log(await api.fetchRaw.lol());
-		console.log(await api.fetchRaw.test());
+		console.log(await api.fetchRaw.test({
+			a: '0xff'
+		}));
 		console.log(await api.fetchRaw.test.ping());
+		console.log(await api.fetchRaw.lol());
+		console.log(await api.fetchRaw.this.does.not.exist());
 	</script>
 </body>
 </html>
