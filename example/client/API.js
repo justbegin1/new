@@ -5,7 +5,7 @@ export class API {
 		this.#baseURL = new URL(url, base);
 		this.#baseURL = this.#baseURL.href;
 	}
-	rawFetch(name = '', params = null, headers = null) {
+	fetchRaw(name = '', params = null, headers = null) {
 		return new Promise((Resolve, Reject) => {
 			const config = {
 				method: 'POST'
@@ -58,13 +58,50 @@ export class API {
 	}
 	fetch(name = '', params = null, headers = null) {
 		return new Promise((Resolve, Reject) => {
-			this.rawFetch(name, params, headers).then(ret => {
+			this.fetchRaw(name, params, headers).then(ret => {
 				if(ret.status === 0) {
 					Resolve(ret.value);
 				} else {
 					Reject(ret);
 				}
 			});
+		});
+	}
+}
+
+export class APIProxy {
+	#api;
+	constructor(url, base) {
+		this.#api = new API(url, base);
+	}
+	get fetch() {
+		const cntr = {
+			api: this.#api,
+			func: []
+		};
+		return new Proxy(function(){}, {
+			get: (dummy, prop, pxy) => {
+				cntr.func.push(prop);
+				return pxy;
+			},
+			apply: (dummy, thisArg, args = [params = null, headers = null]) => {
+				return this.#api.fetch(cntr.func.join('.'), ...args);
+			}
+		});
+	}
+	get fetchRaw() {
+		const cntr = {
+			api: this.#api,
+			func: []
+		};
+		return new Proxy(function(){}, {
+			get: (dummy, prop, pxy) => {
+				cntr.func.push(prop);
+				return pxy;
+			},
+			apply: (dummy, thisArg, args = [params = null, headers = null]) => {
+				return this.#api.fetchRaw(cntr.func.join('.'), ...args);
+			}
 		});
 	}
 }

@@ -6,16 +6,11 @@
 </head>
 <body>
 	<script type="module">
-		import {API} from './API.js';
-
-		const api = new API('../server/public', window.location.href);
-		let res = await api.fetch('test', {
-			a: 10.2
-		}).catch(error => {
-			console.log(error);
-			return null;
-		});
-		console.log(res);
+		import {API, APIProxy} from './API.js';
+		const api = new APIProxy('../server/public', window.location.href);
+		console.log(await api.fetchRaw.lol());
+		console.log(await api.fetchRaw.test());
+		console.log(await api.fetchRaw.test.ping());
 	</script>
 </body>
 </html>
