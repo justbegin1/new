@@ -3,8 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>API Client Example</title>
+	<script type="module" >
+		import './component/api-fetch.js';
+	</script>
 </head>
 <body>
+	<api-fetch></api-fetch>
 	<script type="module">
 		import {API, APIProxy} from './API.js';
 		const api = new APIProxy('../server/public', window.location.href);

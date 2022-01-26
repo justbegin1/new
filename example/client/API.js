@@ -6,7 +6,16 @@ export class API {
 		this.#baseURL = this.#baseURL.href;
 	}
 	fetchRaw(name = '', params = null, headers = null) {
-		return new Promise((Resolve, Reject) => {
+		return new Promise((resolvePromise) => {
+			const Resolver = ({headers = null, status = 0, value = null, meta = null, debug = null} = {}) => {
+				resolvePromise({
+					status: status,
+					value: value,
+					headers: headers,
+					meta: meta,
+					debug: debug
+				});
+			};
 			const config = {
 				method: 'POST'
 			}
@@ -25,31 +34,30 @@ export class API {
 						try {
 							txt = JSON.parse(txt);
 							txt.headers = HEADERS;
-							Resolve(txt);
+							Resolver(txt);
 						} catch (error) {
-							Resolve({
+							Resolver({
 								headers: HEADERS,
 								status: 5,
 								value: txt
 							});
 						}
 					}).catch(txtError => {
-						Resolve({
+						Resolver({
 							headers: HEADERS,
 							status: 5,
 							value: 'No response found'
 						});
 					});
 				} else {
-					Resolve({
+					Resolver({
 						headers: HEADERS,
 						status: fetched.status,
 						value: fetched.statusText
 					});
 				}
 			}).catch(fetchError => {
-				Resolve({
-					headers: {},
+				Resolver({
 					status: -1,
 					value: fetchError.message
 				});
