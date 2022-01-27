@@ -48,7 +48,10 @@ class APIFetch extends HTMLElement {
 				}
 				param = {...param, ...d};
 			}
-			this.#rcntr.innerHTML = JSON.stringify(await this.#api.fetchRaw(fname, param), null, 4);
+			let resp = await this.#api.fetchRaw(fname, param);
+			this.#rcntr.innerHTML = JSON.stringify(resp, null, 4);
+
+			this.#root.querySelector('#resp_cntr').style.background =  (resp.status === 0) ? '#4caf50' : '#f44336';
 			
 			let paramjson = JSON.stringify(param);
 			let hasparam = Object.entries(param).length === 0;
@@ -144,6 +147,7 @@ pre {
 #out_cntr > section {
 	box-shadow: 0 0 0.5em black;
 	padding: 0.5em 1em;
+	background: #e0f2f1;
 }
 </style><div id="cntr">
 	<header>API Function: <button id="fetch">Execute 🗘</button></header>
