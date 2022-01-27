@@ -145,7 +145,7 @@ pre {
 	gap: 0.5em
 }
 #out_cntr > section {
-	box-shadow: 0 0 0.5em black;
+	box-shadow: 1px 1px 1em black;
 	padding: 0.5em 1em;
 	background: #e0f2f1;
 }
