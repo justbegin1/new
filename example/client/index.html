@@ -3,21 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<title>API Client Example</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
 	<script type="module" >
 		import './component/api-fetch.js';
 	</script>
 </head>
 <body>
 	<api-fetch></api-fetch>
-	<script type="module">
-		import {API, APIProxy} from './API.js';
-		const api = new APIProxy('../server/public', window.location.href);
-		console.log(await api.fetchRaw.test({
-			a: '0xff'
-		}));
-		console.log(await api.fetchRaw.test.ping());
-		console.log(await api.fetchRaw.lol());
-		console.log(await api.fetchRaw.this.does.not.exist());
-	</script>
 </body>
 </html>

@@ -1,24 +1,23 @@
 class KeyVal extends HTMLElement {
 	static __tag = 'key-val';
 	static __template = document.createElement('template');
-	#form;
 	#root;
 	constructor() {
 		super();
 		this.#root = this.attachShadow({mode: 'closed'});
 		this.#root.appendChild(KeyVal.__template.content.cloneNode(true));
-		this.#form = this.#root.querySelector('form');
 		this.#root.querySelector('#rem').onclick = () => {
 			this.parentNode.removeChild(this);
 		}
 	}
 	get data() {
-		if(!this.#form.querySelector('#key').reportValidity() || !this.#form.querySelector('#val').reportValidity()) {
+		let keynode = this.#root.querySelector('#key');
+		let valnode = this.#root.querySelector('#val');
+		if(!keynode.reportValidity() || !valnode.reportValidity()) {
 			return null;
 		}
-		const {key, val} = Object.fromEntries((new FormData(this.#form)).entries());
 		return {
-			[key]: val
+			[keynode.value]: valnode.value
 		};
 	}
 }
@@ -26,7 +25,7 @@ KeyVal.__template.innerHTML = `<style>
 * {
 	box-sizing: border-box;
 }
-form {
+:host {
 	display: grid;
 	grid-template-columns: min-content min-content 1fr min-content;
 	gap: 0.5em;
@@ -46,10 +45,8 @@ input[type="text"], textarea {
 	vertical-align: middle;
 	padding: 0.25em;
 }
-</style><form onsubmit="return false;">
-<input type="text" name="key" id="key" pattern="[_a-zA-Z][_a-zA-Z0-9-]*" placeholder="Parameter Name" required />
+</style><input type="text" name="key" id="key" pattern="[_a-zA-Z][_a-zA-Z0-9-]*" placeholder="Parameter Name" required />
 <strong>:</strong>
 <textarea name="val" id="val" cols="30" rows="1" placeholder="Parameter Value"></textarea>
-<input type="button" id="rem" value="🗙" />
-</form>`;
+<input type="button" id="rem" value="🗙" />`;
 customElements.define(KeyVal.__tag, KeyVal);
