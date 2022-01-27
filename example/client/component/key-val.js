@@ -1,6 +1,7 @@
 class KeyVal extends HTMLElement {
 	static __tag = 'key-val';
 	static __template = document.createElement('template');
+	static #keypattern = /^[_a-zA-Z][_a-zA-Z0-9-]*$/;
 	#root;
 	constructor() {
 		super();
@@ -13,12 +14,21 @@ class KeyVal extends HTMLElement {
 	get data() {
 		let keynode = this.#root.querySelector('#key');
 		let valnode = this.#root.querySelector('#val');
-		if(!keynode.reportValidity() || !valnode.reportValidity()) {
+		if(!KeyVal.#keypattern.test(keynode.value)) {
+			keynode.setCustomValidity(`Required 'key' pattern: ${KeyVal.#keypattern.toString()}`);
+			keynode.reportValidity();
 			return null;
 		}
-		return {
-			[keynode.value]: valnode.value
-		};
+		try {
+			let value = (valnode.value === '') ? null : JSON.parse(valnode.value);
+			return {
+				[keynode.value]: value
+			};
+		} catch (error) {
+			valnode.setCustomValidity('Must be a JSON value');
+			valnode.reportValidity();
+			return null;
+		}
 	}
 }
 KeyVal.__template.innerHTML = `<style>
@@ -45,8 +55,8 @@ input[type="text"], textarea {
 	vertical-align: middle;
 	padding: 0.25em;
 }
-</style><input type="text" name="key" id="key" pattern="[_a-zA-Z][_a-zA-Z0-9-]*" placeholder="Parameter Name" required />
+</style><input type="text" name="key" id="key" placeholder="Parameter Name" required />
 <strong>:</strong>
-<textarea name="val" id="val" cols="30" rows="1" placeholder="Parameter Value"></textarea>
+<textarea name="val" id="val" cols="30" rows="1" placeholder="Parameter Value; Must be a JSON value"></textarea>
 <input type="button" id="rem" value="🗙" />`;
 customElements.define(KeyVal.__tag, KeyVal);

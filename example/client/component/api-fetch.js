@@ -1,14 +1,16 @@
 import './key-val.js';
+import {w3CodeColor} from './w3CodeColor.js';
 import {API, APIProxy} from '../API.js';
-import {w3CodeColor} from '../w3CodeColor.js';
 
 class APIFetch extends HTMLElement {
 	static __tag = 'api-fetch';
 	static __template = document.createElement('template');
+	static #funcpattern = /^[_a-zA-Z][_a-zA-Z0-9-.]*$/;
 	#root;
 	#pcntr;
 	#ccntr;
 	#rcntr;
+	#ocntr;
 	#fname;
 	#api;
 	constructor() {
@@ -24,13 +26,17 @@ class APIFetch extends HTMLElement {
 
 		this.#fname = this.#root.querySelector('#func');
 		this.#pcntr = this.#root.querySelector('#para_cntr');
-		this.#ccntr = this.#root.querySelector('#code_cntr');
-		this.#rcntr = this.#root.querySelector('#resp_cntr');
+		this.#ccntr = this.#root.querySelector('#code_cntr pre');
+		this.#rcntr = this.#root.querySelector('#resp_cntr pre');
+		this.#ocntr = this.#root.querySelector('#out_cntr');
+		
+		this.#ocntr.style.display = 'none';
 
-		this.#ccntr.style.display = 'none';
-		this.#rcntr.style.display = 'none';
 		this.#root.querySelector('#fetch').onclick = async () => {
-			if(!this.#fname.reportValidity()) {
+			this.#ocntr.style.display = 'none';
+			if(!APIFetch.#funcpattern.test(this.#fname.value)) {
+				this.#fname.setCustomValidity(`Required 'function-name' pattern: ${APIFetch.#funcpattern}`);
+				this.#fname.reportValidity();
 				return;
 			}
 			let fname = this.#fname.value;
@@ -42,7 +48,7 @@ class APIFetch extends HTMLElement {
 				}
 				param = {...param, ...d};
 			}
-			this.#rcntr.querySelector('pre').innerHTML = JSON.stringify(await this.#api.fetchRaw(fname, param), null, 4);
+			this.#rcntr.innerHTML = JSON.stringify(await this.#api.fetchRaw(fname, param), null, 4);
 			
 			let paramjson = JSON.stringify(param);
 			let hasparam = Object.entries(param).length === 0;
@@ -50,7 +56,7 @@ class APIFetch extends HTMLElement {
 			let paramstr2 = hasparam ? '' : paramjson;
 			let jsonfname = JSON.stringify(fname);
 
-			this.#ccntr.querySelector('pre').innerText = `<script type="module">
+			this.#ccntr.innerText = `<script type="module">
 import {API, APIProxy} from './API.js';
 const url = '../server/public'; /* The API URL eg: '', 'api' */
 const base = window.location.href /* The API base path eg: 'https://api.example.com' */
@@ -86,9 +92,8 @@ const base = window.location.href /* The API base path eg: 'https://api.example.
 	}
 }
 </script>`;
-			w3CodeColor(this.#ccntr.querySelector('pre', 'html'));
-			this.#ccntr.style.display = 'block';
-			this.#rcntr.style.display = 'block';
+			w3CodeColor(this.#ccntr, 'html');
+			this.#ocntr.style.display = 'grid';
 		};
 	}
 }
@@ -114,36 +119,47 @@ header {
 }
 pre {
 	font-family: Consolas,'Courier New', monospace;
+	white-space: pre-wrap;
+	padding: 0;
+	margin: 0;
+	margin-top: 0.5em;
 }
 #cntr {
 	display: grid;
 	gap: 0.5em;
-	grid-template-areas:
-		"heading heading"
-		"func func"
-		"pcntr pcntr"
-		"add fetch"
-		"ccntr rcntr";
+	grid-template-columns: 1fr;
+	background: #1a237e;
+	color: white;
 }
 #para_cntr {
 	display: grid;
 	gap: 0.5em;
 }
+#out_cntr {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	padding: 0.5em 1em;
+	gap: 0.5em
+}
+#out_cntr > section {
+	box-shadow: 0 0 0.5em black;
+	padding: 0.5em 1em;
+}
 </style><div id="cntr">
-<header style="grid-area: heading;">API Caller</header>
-<input pattern="[_a-zA-Z][_a-zA-Z0-9-.]*" style="grid-area: func;" type="text" id="func" placeholder="Function Name" required />
-<section style="grid-area: pcntr;" id="para_cntr">
-	<header>Parameters:</header>
-</section>
-<button style="grid-area: add;" id="add_para">Add parameter</button>
-<button style="grid-area: fetch;" id="fetch">Fetch Result</button>
-<section style="grid-area: ccntr;" id="code_cntr">
-	<header>Code Example:</header>
-	<pre></pre>
-</section>
-<section style="grid-area: rcntr;" id="resp_cntr">
-	<header>Raw Response:</header>
-	<pre></pre>
-</section>
+	<header>API Function: <button id="fetch">Execute 🗘</button></header>
+	<input type="text" id="func" placeholder="Function Name" required />
+	<section id="para_cntr">
+		<header>Parameters: <button id="add_para"><strong>+</strong></button></header>
+	</section>
+</div>
+<div id="out_cntr">
+	<section id="code_cntr">
+		<header>Code Example:</header>
+		<pre></pre>
+	</section>
+	<section id="resp_cntr">
+		<header>Raw Response:</header>
+		<pre></pre>
+	</section>
 </div>`;
 customElements.define(APIFetch.__tag, APIFetch);
