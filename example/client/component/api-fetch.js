@@ -151,7 +151,12 @@ pre {
 }
 </style><div id="cntr">
 	<header>API Function: <button id="fetch">Execute 🗘</button></header>
-	<input type="text" id="func" placeholder="Function Name" required />
+	<datalist id="list">
+		<option value="test">test</option>
+		<option value="test.lol">lol</option>
+		<option value="test.ping">ping</option>
+	</datalist>
+	<input list="list" type="text" id="func" placeholder="Function Name" required />
 	<section id="para_cntr">
 		<header>Parameters: <button id="add_para"><strong>+</strong></button></header>
 	</section>
