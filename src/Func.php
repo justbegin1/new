@@ -48,6 +48,9 @@ final class Func {
 		if(is_readable($func_file)) {
 			require_once $func_file;
 		} else {
+			if($request['func'] === Config::$func_default_name) {
+				return 'You have reached the API server; Welcome';
+			}
 			Server::error("API '{$request['func']}' not found", StatusType::INVALID_REQ);
 		}
 		self::process_path_query();
