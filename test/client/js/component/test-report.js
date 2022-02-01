@@ -6,6 +6,7 @@ class TestReport extends HTMLElement {
 	#root;
 	#data = null;
 	#data_set = false;
+
 	constructor() {
 		super();
 		this.#root = this.attachShadow({mode: 'closed'});
@@ -49,28 +50,34 @@ class TestReport extends HTMLElement {
 			return;
 		}
 		this.#data = value;
-		this.#data.query = TestReport.#dataQuery.bind(this.#data);
+		const boundQueryData = TestReport.#dataQuery.bind(this.#data);
 		Object.freeze(this.#data);
 		this.#data_set = true;
 
 		const summ = {
-			nodes: this.#qs('summary dd', true)
+			nodes: this.#qs('summary dd', true),
+			setVal: (idx, dataQuery, def, suffix = '') => {
+				let val = boundQueryData(dataQuery);
+				summ.nodes[idx].innerText = (val === null) ? def : `${val}${suffix}`;
+			}
 		};
-		summ.setVal = (idx, dataQuery, def, suffix = '') => {
-			let val = this.#data.query(dataQuery);
-			summ.nodes[idx].innerText = (val === null) ? def : `${val}${suffix}`;
-		};
-		summ.setVal(0, 'title', 'None');
 		summ.setVal(2, 'meta.api_time', 'Unknown', 'ms');
 		summ.setVal(3, 'meta.net_time', 'Unknown', 'ms');
 		summ.setVal(4, 'meta.api_mem_peak', 'Unknown', 'KB');
-		
-		let result = Object.values(this.#data.results);
-		result = {total: result.length, passed: result.reduce((c, v) => v ? c + 1 : c, 0)};
-		result.all = result.total === result.passed;
 
-		summ.nodes[1].innerText = `[${result.passed}/${result.total}]`;
-		summ.nodes[1].classList.add(result.all ? 'passed' : 'failed');
+		{
+			summ.nodes[0].innerHTML = (boundQueryData('title') ?? def).replaceAll(/'([^']+)'/g, '<span class="code">$1</span>');
+		}
+		
+		
+		{
+			let result = Object.values(this.#data.results);
+			result = {total: result.length, passed: result.reduce((c, v) => v ? c + 1 : c, 0)};
+			result.all = result.total === result.passed;
+
+			summ.nodes[1].innerText = `[${result.passed}/${result.total}]`;
+			summ.nodes[1].classList.add(result.all ? 'passed' : 'failed');
+		}
 
 		const main = this.#qs('main');
 		main.appendChild(TestReport.#genSection('Request:', this.#data.request));
@@ -105,28 +112,31 @@ TestReport._meta.template.innerHTML =
 		margin: 0;
 	}
 	dd.passed {
-		color: blue;
+		color: #2196f3;
 	}
 	dd.failed {
 		color: red;
 	}
 	details {
 		box-shadow: 0 0 5px black;
-		padding: 0.5em 0.75em;
-		font-family: Consolas,'Courier New', monospace;
+		font-family: Consolas, 'Courier New', monospace;
 		display: grid;
 	}
 	details > summary {
+		padding: 0.5em 0.75em;
 		cursor: pointer;
 		list-style-type: none;
 		display: grid;
 		gap: 0.5em;
 		grid-template-columns: minmax(max-content, 1fr) repeat(4, 1fr);
+		background: #212121;
+		color: white;
 	}
 	details[open] > summary {
 		border-bottom: 1px solid black;
 	}
 	details > main {
+		padding: 0.5em 0.75em;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 0.5em;
@@ -141,13 +151,17 @@ TestReport._meta.template.innerHTML =
 		font-weight: bold;
 	}
 	pre {
-		font-family: Consolas,'Courier New', monospace;
+		font-family: Consolas, 'Courier New', monospace;
 		white-space: pre-wrap;
 		padding: 0;
 		margin: 0;
 	}
+	span.code {
+		font-style: italic;
+		text-decoration: underline;
+	}
 </style>
-<details open>
+<details>
 	<summary>
 		<dl><dt>Title:</dt><dd>Test</dd></dl>
 		<dl><dt>Passed:</dt><dd>Unknown</dd></dl>

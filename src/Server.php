@@ -179,7 +179,7 @@ final class Server {
 		if(Config::$dev_mode) {
 			$response['meta'] = [];
 			if(defined(__NAMESPACE__ . '\\__START_TIME__')) {
-				$response['meta']['exe_time'] = microtime(true) - constant(__NAMESPACE__ . '\\__START_TIME__');
+				$response['meta']['exe_time'] = round(microtime(true) - constant(__NAMESPACE__ . '\\__START_TIME__'), 7);
 			}
 			$response['meta']['mem_peak'] = memory_get_peak_usage();
 			if(count(self::$debug) > 0) {

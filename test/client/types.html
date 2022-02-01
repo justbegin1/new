@@ -6,19 +6,98 @@
 	<link rel="stylesheet" href="css/common.css">
 </head>
 <body>
-	<test-report></test-report>
 	<script type="module">
-		import './js/test-report';
+		import './js/component/test-report.js';
 		import {APITester, ResultTest as RT} from './js/api-tester.js';
 		const T = new APITester('../server/public', window.location.href);
-		
-		const report = await T.test('Type-test: Sending int as int', {
-			func: 'data_type',
-			param: {
-				int: 10
+
+		async function test_n_report({title, type, sendValue = null, actualValue = null, okStatus = true, testValue = true, tests = [], attachPoint = document.body } = {}) {
+			let autoTests = [RT.store.statusOK(okStatus)];
+			if(testValue) {
+				autoTests.push(RT.store.cmpValue({[type]: actualValue}));
 			}
-		}, RT.store.statusOK(), RT.store.cmpValue({int: 10}));
-		document.querySelector('test-report').data = report;
+			const node = document.createElement('test-report');
+			const report = await T.test(`Type-test: ${title}`, {
+				func: 'data_type',
+				param: {
+					[type]: sendValue
+				}
+			}, ...autoTests, ...tests);
+			node.data = report;
+			attachPoint.appendChild(node);
+			return report;
+		}
+		async function test_group(title, ...tests) {
+			const node = document.createElement('section');
+			const result = {
+				total: 0,
+				passed: 0
+			};
+			for(let t of tests) {
+				let {results: testResult} = await test_n_report({
+					...t,
+					attachPoint: node
+				});
+				testResult = Object.values(testResult).reduce((carry, v) => carry && v, true);
+				result.total++;
+				if(testResult) {
+					result.passed++;
+				}
+			}
+			result.all = result.total === result.passed;
+			const header = document.createElement('header');
+			header.innerHTML =
+`<div>
+	<strong>Title:</strong>
+	${title.replaceAll(/'([^']+)'/g, '<span class="code">$1</span>')}
+</div>
+<div>
+	<strong>Passed:</strong>
+	<span>[${result.passed}/${result.total}]</span>
+</div>`;
+			header.classList.add(result.all ? 'passed' : 'failed');
+			node.insertAdjacentElement('afterbegin', header);
+			document.body.appendChild(node);
+		}
+		test_group("Testing 'int'", {
+			title: "Sending 'int' as 'int'",
+			type: 'int',
+			sendValue: 10,
+			actualValue: 10
+		},{
+			title: "Sending 'int' as 'string'",
+			type: 'int',
+			sendValue: '10',
+			actualValue: 10
+		},{
+			title: "Sending 'int' as 'string{hex}'",
+			type: 'int',
+			sendValue: '0xef',
+			actualValue: 239
+		},{
+			title: "Sending 'null' insteadof 'int'",
+			type: 'int',
+			sendValue: null,
+			okStatus: false,
+			testValue: false
+		},{
+			title: "Sending 'float' insteadof 'int'",
+			type: 'int',
+			sendValue: 1.02,
+			okStatus: false,
+			testValue: false
+		},{
+			title: "Sending 'false' insteadof 'int'",
+			type: 'int',
+			sendValue: false,
+			okStatus: false,
+			testValue: false
+		},{
+			title: "Sending 'true' insteadof 'int'",
+			type: 'int',
+			sendValue: true,
+			actualValue: 1
+		});
 	</script>
 </body>
 </html>

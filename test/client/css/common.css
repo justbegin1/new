@@ -3,5 +3,33 @@
 }
 body {
 	margin: 0;
-	padding: 0;
+	padding: 0.5em;
+	display: grid;
+	gap: 0.5em;
+}
+body > section {
+	display: grid;
+	gap: 0.5em;
+}
+body > section > header {
+	display: grid;
+	grid-template-columns: max-content max-content;
+	gap: 0.5em;
+	justify-content: space-around;
+	font-family: Consolas, 'Courier New', monospace;
+	font-size: large;
+	background: #1a237e;
+	color: white;
+	padding: 0.5em 0.75em;
+	box-shadow: 0 0 5px black;
+}
+body > section > header span.code {
+	font-style: italic;
+	text-decoration: underline;
+}
+body > section > header.passed {
+	background: #1a237e;
+}
+body > section > header.failed {
+	background: red;
 }

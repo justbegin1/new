@@ -69,10 +69,10 @@ export class APITester {
 		meta.net_time = performance.now() - meta.net_time;
 		meta.api_time = (typeof response.meta?.exe_time === 'number')
 			? Number((new Number(response.meta.exe_time * 1000)).toPrecision(4))
-			: 'Unknown';
+			: null;
 		meta.api_mem_peak = (typeof response.meta?.mem_peak === 'number')
 			? Number((new Number(response.meta.mem_peak / 1024)).toPrecision(3))
-			: 'Unknown';
+			: null;
 
 		let results = {};
 		for(const t of tests) {
