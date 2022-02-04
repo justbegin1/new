@@ -2,9 +2,11 @@
 namespace Krishna\API;
 
 use Krishna\DataValidator\TypeHandler;
+use Krishna\Utilities\Debugger;
+use Krishna\Utilities\JSON;
 
 final class Server {
-	use StaticOnlyTrait;
+	use \Krishna\Utilities\StaticOnlyTrait;
 
 	private static array
 		$request = [
@@ -59,6 +61,9 @@ final class Server {
 				}
 			}
 		});
+		
+		// Init Debugger
+		Debugger::$dumpper = [Server::class, 'add_debug_msg'];
 
 		// Init paths
 		self::$func_base_path = realpath($func_base_path ?? (getcwd() . '/../function'));
@@ -66,11 +71,7 @@ final class Server {
 
 		// Init Custom Validator DataTypes
 		TypeHandler::set_multiple_custom_type_class([
-			'flag' => 'FlagType',
-			'string64' => 'String64Type',
-			'json' => 'JsonType',
-			'json64' => 'Json64Type',
-			'url64' => 'URL64Type'
+			'flag' => 'FlagType'
 		], '\\Krishna\\API\\DataType');
 
 		// Init request info

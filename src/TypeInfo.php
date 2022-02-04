@@ -2,7 +2,7 @@
 namespace Krishna\API;
 
 final class TypeInfo {
-	use StaticOnlyTrait;
+	use \Krishna\Utilities\StaticOnlyTrait;
 	private static array $consume_info = [];
 	public static function get(string $type) {
 		if(array_key_exists($type, self::$consume_info)) {

@@ -3,10 +3,10 @@ namespace Krishna\API;
 
 use Krishna\DataValidator\MultiLinedException;
 use Krishna\DataValidator\ObjectHandler;
+use Krishna\DataValidator\OutOfBoundAction;
 use Krishna\DataValidator\Validator;
-
 final class Func {
-	use StaticOnlyTrait;
+	use \Krishna\Utilities\StaticOnlyTrait;
 	private static $definition = null;
 	private static array $auth = [];
 	private static $signature = null;
@@ -19,9 +19,9 @@ final class Func {
 			self::$auth[] = $h;
 		}
 	}
-	public static function set_signature(array $signature) {
+	public static function set_signature(array $signature, OutOfBoundAction $on_out_of_bound = OutOfBoundAction::Trim) {
 		try {
-			self::$signature = new Validator($signature, true);
+			self::$signature = new Validator($signature, $on_out_of_bound);
 			if(!is_a(self::$signature->struct, ObjectHandler::class)) {
 				throw new MultiLinedException('Invalid signature; It has to be a object structure');
 			}

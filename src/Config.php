@@ -2,7 +2,7 @@
 namespace Krishna\API;
 
 final class Config {
-	use StaticOnlyTrait;
+	use \Krishna\Utilities\StaticOnlyTrait;
 	// Flags
 	public static bool
 		$dev_mode = false,

@@ -1,6 +1,8 @@
 <?php
 namespace Krishna\API;
 
+use Krishna\Utilities\Debugger;
+
 final class Consumable {
 	public int $count;
 	public bool $has_more;
