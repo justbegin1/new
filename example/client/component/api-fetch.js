@@ -155,6 +155,7 @@ pre {
 		<option value="test">test</option>
 		<option value="test.lol">lol</option>
 		<option value="test.ping">ping</option>
+		<option value="test.auth">auth</option>
 	</datalist>
 	<input list="list" type="text" id="func" placeholder="Function Name" required />
 	<section id="para_cntr">

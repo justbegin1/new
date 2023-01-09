@@ -4,5 +4,5 @@ namespace Krishna\API;
 use Krishna\DataValidator\Returner;
 
 interface AuthenticatorInterface {
-	public static function authenticate(array $param) : Returner;
+	public function authenticate(array $param, string $functionName) : Returner;
 }

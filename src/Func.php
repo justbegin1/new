@@ -57,13 +57,24 @@ final class Func {
 		if(!is_callable(self::$definition)) {
 			Server::error("Function '{$request['func']}' has not been defined", StatusType::DEV_ERR);
 		}
-		if(self::$signature === null) {
-			return (self::$definition)([], $request['func']);
+		// Validate query
+		$query = [];
+		if(self::$signature !== null) {
+			$query = self::$signature->validate($request['query']);
+			if($query->valid) {
+				$query = $query->value;
+			} else {
+				Server::error($query->error->errors, StatusType::INVALID_REQ);
+			}
 		}
-		$query = self::$signature->validate($request['query']);
-		if($query->valid) {
-			return (self::$definition)($query->value, $request['func']);
+		// Authentcate
+		foreach(self::$auth as $handler) {
+			$test = $handler->authenticate($query, $request['func']);
+			if(!$test->valid) {
+				Server::error($test->value, StatusType::UNAUTH_REQ);
+			}
 		}
-		Server::error($query->error->errors, StatusType::INVALID_REQ);
+		
+		return (self::$definition)($query, $request['func']);
 	}
 }
