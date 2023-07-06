@@ -1,10 +1,11 @@
 <?php
 namespace Krishna\API;
 
-use Krishna\DataValidator\MultiLinedException;
+use Krishna\DataValidator\ComplexException;
 use Krishna\DataValidator\ObjectHandler;
 use Krishna\DataValidator\OutOfBoundAction;
 use Krishna\DataValidator\Validator;
+
 final class Func {
 	use \Krishna\Utilities\StaticOnlyTrait;
 	private static $definition = null;
@@ -23,9 +24,9 @@ final class Func {
 		try {
 			self::$signature = new Validator($signature, $on_out_of_bound);
 			if(!is_a(self::$signature->struct, ObjectHandler::class)) {
-				throw new MultiLinedException('Invalid signature; It has to be a object structure');
+				throw new ComplexException('Invalid signature; It has to be a object structure');
 			}
-		} catch(MultiLinedException $ex) {
+		} catch(ComplexException $ex) {
 			Server::error_from($ex->getInfo(), __METHOD__);
 		}
 	}
@@ -71,7 +72,7 @@ final class Func {
 		foreach(self::$auth as $handler) {
 			$test = $handler->authenticate($query, $request['func']);
 			if(!$test->valid) {
-				Server::error($test->value, StatusType::UNAUTH_REQ);
+				Server::error($test->error, StatusType::UNAUTH_REQ);
 			}
 		}
 		
