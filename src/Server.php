@@ -63,7 +63,7 @@ final class Server {
 		});
 		
 		// Init Debugger
-		Debugger::$dumpper = [Server::class, 'add_debug_msg'];
+		Debugger::$dumpper_callback = [Server::class, 'add_debug_msg'];
 
 		// Init paths
 		self::$func_base_path = realpath($func_base_path ?? (getcwd() . '/../function'));

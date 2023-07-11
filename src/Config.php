@@ -12,7 +12,8 @@ final class Config {
 	public static string
 		$magic_query_prop = '@__url__@',
 		$jsonp_keyword = '_jsonp_',
-		$func_default_name = '@Index';
+		$func_default_name = '@index',
+		$func_common_name = '@all';
 
 	// Headers
 	public static bool

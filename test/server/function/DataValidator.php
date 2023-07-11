@@ -1,6 +1,6 @@
 <?php
 use Krishna\API\Func;
-use Krishna\DataValidator\MultiLinedException;
+use Krishna\DataValidator\ComplexException;
 use Krishna\DataValidator\Validator;
 
 Func::set_signature([
@@ -16,7 +16,7 @@ Func::set_definition(function($p) {
 			return true;
 		}
 		return $r->error;
-	} catch (MultiLinedException $ex) {
+	} catch (ComplexException $ex) {
 		return $ex->getInfo();
 	} catch (\Throwable $ex) {
 		return 'Invalid data';
