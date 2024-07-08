@@ -200,9 +200,9 @@ final class Server {
 	public static function error(mixed $info, StatusType $status = StatusType::EXEC_ERR) : never {
 		if(!Config::$dev_mode) {
 			switch($status) {
-				case StatusType::EXEC_ERR:
-					$info = 'Server execution error';
-					break;
+				// case StatusType::EXEC_ERR:
+				// 	$info = 'Server execution error';
+				// 	break;
 				case StatusType::DEV_ERR:
 					$info = 'Internal server error';
 					break;
