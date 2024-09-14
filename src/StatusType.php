@@ -8,4 +8,14 @@ enum StatusType : int {
 	case EXEC_ERR = 3;
 	case DEV_ERR = 4;
 	// case JSON_ERR = 5; On client side
+
+	public function description(): string {
+		return match($this) {
+			self::OK => 'OK',
+			self::INVALID_REQ => 'Invalid_Request',
+			self::UNAUTH_REQ => 'Unauthorized_Request',
+			self::EXEC_ERR => 'Execution_Error',
+			self::DEV_ERR => 'Dev_Error',
+		};
+	}
 }

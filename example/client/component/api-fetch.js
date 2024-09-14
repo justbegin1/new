@@ -48,8 +48,12 @@ class APIFetch extends HTMLElement {
 				}
 				param = {...param, ...d};
 			}
-			let resp = await this.#api.fetchRaw(fname, param);
-			this.#rcntr.innerHTML = JSON.stringify(resp, null, 4);
+			const resp = await this.#api.fetchRaw(fname, param);
+			if(resp.status === 5) {
+				this.#rcntr.innerText = resp.value;
+			} else {
+				this.#rcntr.innerHTML = JSON.stringify(resp, null, 4);
+			}
 
 			this.#root.querySelector('#resp_cntr').style.background =  (resp.status === 0) ? '#4caf50' : '#f44336';
 			

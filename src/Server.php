@@ -179,10 +179,12 @@ final class Server {
 				}
 			}
 		}
-		$response = [
-			'status' => $status->value,
-			'value' => $value
-		];
+		$response = ['status' => $status->value];
+		if($status !== StatusType::OK) {
+			$response['status_desc'] = $status->description();
+		}
+		$response['value'] = $value;
+
 		if(Config::$dev_mode) {
 			$response['meta'] = [];
 			if(defined(__NAMESPACE__ . '\\__START_TIME__')) {
@@ -204,10 +206,12 @@ final class Server {
 	}
 	private static function final_writer(mixed $value = null, StatusType $status = StatusType::OK) : never {
 		self::$final_called = true;
+
 		if(self::$custom_final_writer === null) {
 			self::_default_final_writer_($value, $status);
 			exit(0);
 		}
+		
 		if(!is_callable(self::$custom_final_writer)) {
 			$status = StatusType::DEV_ERR;
 			$value = 'Custom final writer is not callable';

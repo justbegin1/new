@@ -1,6 +1,64 @@
 <?php
 use Krishna\API\Func;
 use Krishna\API\Server;
+use Krishna\Utilities\JSON;
+
+Server::set_custom_final_writer(function($data) {
+	[
+		'status' => $status,
+		'value' => $value,
+		'headers' => $headers,
+		'meta' => $meta
+	] = $data;
+?><!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Custom Final Writer</title>
+	<style>
+		body {
+			padding: 0.5rem;
+			margin: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+		dl {
+			padding: 0.8rem;
+			box-shadow: 0 0 3px black;
+			border-radius: 0.5rem;
+			display: grid;
+			gap: 0.8rem;
+			grid-template-columns: max-content 1fr;
+		}
+		dt {
+			font-weight: bold;
+			font-size: 1.1rem;
+		}
+		dd {
+			margin: 0;
+		}
+		pre {
+			font-size: 1.1rem;
+			margin: 0;
+			white-space: pre-wrap;
+			word-break: break-all;
+		}
+	</style>
+</head>
+<body>
+	<dl>
+		<dt>Status:</dt>
+		<dd><?= $status->description() ?></dd>
+		<dt>Value:</dt>
+		<dd><pre><?= JSON::encode($value, true, true) ?></pre></dd>
+		<dt>Headers:</dt>
+		<dd><pre><?= JSON::encode($headers, true, true) ?></pre></dd>
+		<dt>Meta:</dt>
+		<dd><pre><?= JSON::encode($meta, true, true) ?></pre></dd>
+	</dl>
+</body>
+</html><?php
+});
 
 Func::set_signature([
 	'?bool' => 'bool',
@@ -46,31 +104,4 @@ Func::set_signature([
 
 Func::set_definition(function(array $params, string $function_name) {
 	return $params;
-});
-
-
-function array2xml(array $array, \SimpleXMLElement &$xml) {
-	// Loop through array
-	foreach($array as $key => $value ) {
-		// Another array? Iterate
-		if (is_array($value)) {
-			array2xml($value, $xml->addChild($key));
-		} else {
-			$xml->addChild($key, $value);
-		}
-	}
-	
-	// Return XML
-	return $xml->asXML();
-}
-Server::set_custom_final_writer(function($data) {
-	// [
-	// 	'status' => $status,
-	// 	'value' => $value,
-	// 	'headers' => $headers,
-	// 	'meta' => $meta
-	// ] = $data;
-
-	// Dump the final data
-	var_dump($data);
 });
