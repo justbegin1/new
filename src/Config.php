@@ -6,7 +6,7 @@ final class Config {
 	// Flags
 	public static bool
 		$dev_mode = false,
-		$allow_jsonp = true;
+		$allow_jsonp = false;
 	
 	// Environment Settings
 	public static string

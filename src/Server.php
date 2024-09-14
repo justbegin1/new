@@ -16,12 +16,19 @@ final class Server {
 			'query' => []
 		],
 		$debug = [];
+
 	private static string $func_base_path;
 
 	private static bool
 		$direct_exit = false,
 		$final_called = false,
 		$init_flag = false;
+	
+	private static $custom_final_writer = null; // ?callable
+
+	public static function set_custom_final_writer(?callable $func) : void {
+		self::$custom_final_writer = $func;
+	}
 
 	public static function force_exit() : never {
 		self::$direct_exit = true;
@@ -135,8 +142,7 @@ final class Server {
 		}
 		unset(self::$request['path']);
 	}
-	private static function final_writer(mixed $value = null, StatusType $status = StatusType::OK) : never {
-		self::$final_called = true;
+	private static function _default_final_writer_(mixed $value = null, StatusType $status = StatusType::OK) {
 		if(!headers_sent()) {
 			if(
 				Config::$zlib === true
@@ -195,6 +201,71 @@ final class Server {
 		} else {
 			echo $response;
 		}
+	}
+	private static function final_writer(mixed $value = null, StatusType $status = StatusType::OK) : never {
+		self::$final_called = true;
+		if(self::$custom_final_writer === null) {
+			self::_default_final_writer_($value, $status);
+			exit(0);
+		}
+		if(!is_callable(self::$custom_final_writer)) {
+			$status = StatusType::DEV_ERR;
+			$value = 'Custom final writer is not callable';
+			self::$debug[] = [
+				'title' => 'Custom final writer',
+				'value' => self::$custom_final_writer
+			];
+			self::_default_final_writer_($value, $status);
+			exit(0);
+		}
+		
+		$headers = [];
+		$meta = null;
+
+		if(!headers_sent()) {
+			if(
+				Config::$zlib === true
+				&& extension_loaded('zlib')
+				&& isset($_SERVER['HTTP_ACCEPT_ENCODING'])
+				&& substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')
+				&& (ini_get('output_handler') != 'ob_gzhandler')
+			) {
+				@ini_set('zlib.output_compression', 1);
+			}
+		}
+		if(Config::$disable_caching === true) {
+			$headers[] = 'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT';
+			$headers[] = 'Expires: 0';
+			$headers[] = 'Cache-Control: no-store, no-cache, must-revalidate';
+			$headers[] = 'Cache-Control: post-check=0, pre-check=0';
+			$headers[] = 'Pragma: no-cache';
+		}
+		if(Config::$access_control_headers !== null) {
+			foreach(Config::$access_control_headers as $h) {
+				$headers[] = $h;
+			}
+		}
+		if(Config::$other_headers !== null) {
+			foreach(Config::$other_headers as $h) {
+				$headers[] = $h;
+			}
+		}
+		if(Config::$dev_mode) {
+			$meta = [];
+			if(defined(__NAMESPACE__ . '\\__START_TIME__')) {
+				$meta['exe_time'] = round(microtime(true) - constant(__NAMESPACE__ . '\\__START_TIME__'), 7);
+			}
+			$meta['mem_peak'] = memory_get_peak_usage();
+			if(count(self::$debug) > 0) {
+				$meta['debug'] = self::$debug;
+			}
+		}
+		(self::$custom_final_writer)([
+			'status' => $status,
+			'value' => $value,
+			'headers' => $headers,
+			'meta' => $meta
+		]);
 		exit(0);
 	}
 	public static function error(mixed $info, StatusType $status = StatusType::EXEC_ERR) : never {
