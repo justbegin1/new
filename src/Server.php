@@ -152,6 +152,7 @@ final class Server {
 				&& (ini_get('output_handler') != 'ob_gzhandler')
 			) {
 				@ini_set('zlib.output_compression', 1);
+				header('Content-Encoding: gzip');
 			}
 			if(Config::$disable_caching === true) {
 				header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');

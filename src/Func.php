@@ -99,7 +99,7 @@ final class Func {
 				Server::error($query->error->errors, StatusType::INVALID_REQ);
 			}
 		}
-		// Authentcate
+		// Authenticate
 		foreach(self::$auth as $handler) {
 			$test = $handler->authenticate($query, $request['func']);
 			if(!$test->valid) {
